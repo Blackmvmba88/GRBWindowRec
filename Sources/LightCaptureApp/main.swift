@@ -47,7 +47,19 @@ final class Recorder: NSObject, ObservableObject, SCRecordingOutputDelegate, SCS
 
     override init() {
         super.init()
-        Task { await refreshSources() }
+        Task {
+            await requestMicrophonePermission()
+            await refreshSources()
+        }
+    }
+
+    private func requestMicrophonePermission() async {
+        guard AVCaptureDevice.authorizationStatus(for: .audio) == .notDetermined else { return }
+        _ = await withCheckedContinuation { continuation in
+            AVCaptureDevice.requestAccess(for: .audio) { granted in
+                continuation.resume(returning: granted)
+            }
+        }
     }
 
     func refreshSources() async {
@@ -83,7 +95,7 @@ final class Recorder: NSObject, ObservableObject, SCRecordingOutputDelegate, SCS
             chooseDefault()
             status = "Listo: \(displays.count) pantalla(s), \(applications.count) app(s)"
         } catch {
-            status = "No se pudo leer el contenido: \(error.localizedDescription)"
+            status = "Permiso de Grabación de pantalla pendiente. Actívalo en Ajustes del Sistema y pulsa actualizar."
         }
         isLoading = false
     }

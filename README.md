@@ -74,6 +74,11 @@ También permite incluir por separado audio del sistema y micrófono, muestra el
 tiempo transcurrido, abre la carpeta de resultados y reproduce la última
 grabación. La barra espaciadora inicia o detiene.
 
+Al abrirse, la app solicita automáticamente el permiso del micrófono, consulta
+las pantallas disponibles y crea `~/Movies/GRBWindowRec` cuando hace falta. El
+primer permiso de Grabación de pantalla todavía requiere pulsar “Permitir” en
+macOS; después queda guardado y no vuelve a pedirse.
+
 El botón de actualización vuelve a consultar las fuentes cuando conectas una
 pantalla o abres una aplicación nueva. GRB Window Rec se excluye a sí misma de
 la captura de pantalla completa.

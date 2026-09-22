@@ -1,0 +1,54 @@
+#!/bin/zsh
+set -u
+
+BASE_DIR="${0:A:h}"
+cd "$BASE_DIR"
+
+integer FAILURES=0
+integer CHECKS=0
+
+pass() { print "✓ $1"; }
+fail() { print -u2 "✗ $1"; (( FAILURES++ )); }
+check() {
+  local label="$1"
+  shift
+  (( CHECKS++ ))
+  if "$@" >/tmp/grb-window-rec-doctor.out 2>/tmp/grb-window-rec-doctor.err; then
+    pass "$label"
+  else
+    fail "$label"
+    sed 's/^/  /' /tmp/grb-window-rec-doctor.err /tmp/grb-window-rec-doctor.out 2>/dev/null | tail -12 >&2
+  fi
+}
+
+print "GRB Window Rec doctor"
+print "Directorio: $BASE_DIR"
+print ""
+
+check "macOS disponible" sw_vers -productVersion
+check "Arquitectura arm64" zsh -c '[[ "$(uname -m)" == arm64 ]]'
+check "FFmpeg instalado" zsh -c '(( $+commands[ffmpeg] ))'
+check "FFprobe instalado" zsh -c '(( $+commands[ffprobe] ))'
+check "Package.swift presente" test -f Package.swift
+check "Código Swift presente" test -f Sources/LightCaptureApp/main.swift
+check "Icono presente" test -f Assets/AppIcon.icns
+check "Scripts con sintaxis válida" zsh -n capturar.sh construir-app.sh crear-dmg.sh diagnostico.sh validar.sh doctor
+check "Ayuda de captura" ./capturar.sh --help
+check "Diagnóstico base" ./diagnostico.sh
+check "Compilación Swift" swift build -c release --disable-sandbox
+check "App compilada" zsh -c '[[ -x "GRB Window Rec.app/Contents/MacOS/GRBWindowRecApp" || -x "/Applications/GRB Window Rec.app/Contents/MacOS/GRBWindowRecApp" ]]'
+
+if [[ -x "GRB Window Rec.app/Contents/MacOS/GRBWindowRecApp" ]]; then
+  check "Bundle local compilado" test -x "GRB Window Rec.app/Contents/MacOS/GRBWindowRecApp"
+fi
+
+print ""
+print "Permisos de Grabación de pantalla y Micrófono: comprobarlos al abrir la app."
+print "Pruebas ejecutadas: $CHECKS"
+if (( FAILURES == 0 )); then
+  print "DOCTOR OK: todas las pruebas automáticas pasaron."
+  exit 0
+fi
+
+print -u2 "DOCTOR FALLÓ: $FAILURES prueba(s) con error."
+exit 1

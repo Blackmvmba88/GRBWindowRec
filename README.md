@@ -48,6 +48,16 @@ Para revisar dependencias, arquitectura, espacio libre y permisos:
 ./diagnostico.sh
 ```
 
+Para ejecutar todas las pruebas automáticas del proyecto:
+
+```sh
+./doctor
+```
+
+`doctor` valida dependencias, scripts, estructura, compilación Swift y el
+bundle generado. Los permisos de macOS se muestran como comprobación manual,
+porque sólo pueden confirmarse al abrir la aplicación.
+
 ## Aplicación macOS
 
 Para construir la miniapp nativa:
@@ -144,6 +154,7 @@ Un valor `mean_volume: -inf dB` indica silencio digital.
 - `capturar.sh`: grabación y listado de dispositivos.
 - `validar.sh`: inspección de pistas y nivel de audio.
 - `diagnostico.sh`: comprobación rápida del entorno antes de grabar.
+- `doctor`: ejecuta la batería completa de comprobaciones automáticas.
 - `construir-app.sh`: compila y firma localmente la aplicación nativa.
 - `crear-dmg.sh`: genera el instalador portable y su checksum SHA-256.
 - `VERSION`: versión usada por la app, el DMG y las releases.

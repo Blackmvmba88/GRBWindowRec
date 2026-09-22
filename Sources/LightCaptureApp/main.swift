@@ -28,6 +28,7 @@ final class Recorder: NSObject, ObservableObject, SCRecordingOutputDelegate, SCS
     @Published private(set) var elapsed = 0
     @Published private(set) var status = "Buscando pantallas y aplicaciones…"
     @Published private(set) var lastRecording: URL?
+    @Published private(set) var needsScreenPermission = false
 
     private var shareableContent: SCShareableContent?
     private var stream: SCStream?
@@ -69,6 +70,7 @@ final class Recorder: NSObject, ObservableObject, SCRecordingOutputDelegate, SCS
         do {
             let content = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)
             shareableContent = content
+            needsScreenPermission = false
 
             displays = content.displays.map { display in
                 let name = NSScreen.screens.first(where: {
@@ -95,9 +97,15 @@ final class Recorder: NSObject, ObservableObject, SCRecordingOutputDelegate, SCS
             chooseDefault()
             status = "Listo: \(displays.count) pantalla(s), \(applications.count) app(s)"
         } catch {
+            needsScreenPermission = true
             status = "Permiso de Grabación de pantalla pendiente. Actívalo en Ajustes del Sistema y pulsa actualizar."
         }
         isLoading = false
+    }
+
+    func openScreenPermissions() {
+        guard let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture") else { return }
+        NSWorkspace.shared.open(url)
     }
 
     func toggle() {
@@ -265,12 +273,13 @@ private extension CGRect {
 
 struct ContentView: View {
     @StateObject private var recorder = Recorder()
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         VStack(spacing: 18) {
             HStack {
                 Circle().fill(recorder.isRecording ? .red : .secondary.opacity(0.35)).frame(width: 11, height: 11)
-                Text(recorder.isRecording ? "GRABANDO" : "GRB WINDOW REC")
+                Text(recorder.isRecording ? "GRABANDO" : "GRABAR")
                     .font(.caption.weight(.semibold)).tracking(1.4)
                 Spacer()
                 Button { Task { await recorder.refreshSources() } } label: {
@@ -327,9 +336,18 @@ struct ContentView: View {
                 Button("Reproducir última", action: recorder.playLast)
                     .disabled(recorder.lastRecording == nil || recorder.isRecording)
             }
+
+            if recorder.needsScreenPermission {
+                Button("Abrir permisos de pantalla", action: recorder.openScreenPermissions)
+                    .buttonStyle(.link)
+            }
         }
         .padding(24)
         .frame(width: 470, height: 440)
+        .onChange(of: scenePhase) { _, phase in
+            guard phase == .active else { return }
+            Task { await recorder.refreshSources() }
+        }
     }
 }
 

@@ -36,9 +36,9 @@ check "Scripts con sintaxis válida" zsh -n capturar.sh construir-app.sh crear-d
 check "Ayuda de captura" ./capturar.sh --help
 check "Diagnóstico base" ./diagnostico.sh
 check "Compilación Swift" swift build -c release --disable-sandbox
-check "App compilada" zsh -c '[[ -x "GRB Window Rec.app/Contents/MacOS/GRBWindowRecApp" || -x "/Applications/GRB Window Rec.app/Contents/MacOS/GRBWindowRecApp" ]]'
+check "App compilada" zsh -c '[[ -x "Grabar.app/Contents/MacOS/GRBWindowRecApp" || -x "$HOME/Applications/Grabar.app/Contents/MacOS/GRBWindowRecApp" ]]'
 
-if [[ -x "GRB Window Rec.app/Contents/MacOS/GRBWindowRecApp" ]]; then
+if [[ -x "Grabar.app/Contents/MacOS/GRBWindowRecApp" ]]; then
   check "Bundle local compilado" test -x "GRB Window Rec.app/Contents/MacOS/GRBWindowRecApp"
 fi
 

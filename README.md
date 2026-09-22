@@ -64,7 +64,13 @@ Para construir la miniapp nativa:
 
 ```sh
 ./construir-app.sh
-open "GRB Window Rec.app"
+open "Grabar.app"
+```
+
+Para instalar y abrir siempre la copia estable en `~/Applications`:
+
+```sh
+./instalar.sh
 ```
 
 La ventana detecta dinámicamente las pantallas por su nombre real y las
@@ -74,7 +80,8 @@ También permite incluir por separado audio del sistema y micrófono, muestra el
 tiempo transcurrido, abre la carpeta de resultados y reproduce la última
 grabación. La barra espaciadora inicia o detiene.
 
-Al abrirse, la app solicita automáticamente el permiso del micrófono, consulta
+Al abrirse, la app solicita automáticamente los permisos de micrófono y audio
+del sistema, consulta
 las pantallas disponibles y crea `~/Movies/GRBWindowRec` cuando hace falta. El
 primer permiso de Grabación de pantalla todavía requiere pulsar “Permitir” en
 macOS; después queda guardado y no vuelve a pedirse.
@@ -90,7 +97,7 @@ la captura de pantalla completa.
 ```
 
 El resultado queda en `dist/Light-Capture-VERSION.dmg`. Al abrirlo, arrastra
-**GRB Window Rec** al acceso de **Applications**.
+**Grabar** al acceso de **Applications**.
 
 La versión se controla desde el archivo `VERSION`. El script compila la app,
 incorpora el icono, aplica una firma local, crea el DMG comprimido y muestra su
@@ -160,6 +167,7 @@ Un valor `mean_volume: -inf dB` indica silencio digital.
 - `validar.sh`: inspección de pistas y nivel de audio.
 - `diagnostico.sh`: comprobación rápida del entorno antes de grabar.
 - `doctor`: ejecuta la batería completa de comprobaciones automáticas.
+- `instalar.sh`: compila, instala en `/Applications` y abre la copia estable.
 - `construir-app.sh`: compila y firma localmente la aplicación nativa.
 - `crear-dmg.sh`: genera el instalador portable y su checksum SHA-256.
 - `VERSION`: versión usada por la app, el DMG y las releases.

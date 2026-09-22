@@ -2,5 +2,6 @@
 .build/
 grabaciones/
 GRB Window Rec.app/
+Light Capture.app/
 dist/
 *.log

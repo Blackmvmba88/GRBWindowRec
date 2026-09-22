@@ -279,7 +279,7 @@ struct ContentView: View {
         VStack(spacing: 18) {
             HStack {
                 Circle().fill(recorder.isRecording ? .red : .secondary.opacity(0.35)).frame(width: 11, height: 11)
-                Text(recorder.isRecording ? "GRABANDO" : "GRABAR")
+                Text(recorder.isRecording ? "GRABANDO" : "GRB WINDOW RECORDER")
                     .font(.caption.weight(.semibold)).tracking(1.4)
                 Spacer()
                 Button { Task { await recorder.refreshSources() } } label: {
